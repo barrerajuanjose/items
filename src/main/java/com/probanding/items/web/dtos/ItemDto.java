@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -12,5 +13,5 @@ public class ItemDto {
     private final String id;
     private final String title;
     private final String thumbnail;
-    private final String shippingOptions;
+    @Setter private String paymentName;
 }

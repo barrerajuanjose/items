@@ -1,6 +1,7 @@
 package com.probanding.items.web.controllers;
 
 import com.probanding.items.business.services.ItemService;
+import com.probanding.items.business.services.flux.PaymentOptionsFluxService;
 import com.probanding.items.web.dtos.ItemDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,9 @@ public class ItemController {
     @Autowired
     ItemService itemService;
 
+    @Autowired
+    PaymentOptionsFluxService paymentOptionsFluxService;
+
     @GetMapping("/{id}")
     private Mono<ItemDto> get(@PathVariable(value = "id") String id) {
         return itemService.get(id)
@@ -23,7 +27,12 @@ public class ItemController {
                                 .id(item.getId())
                                 .title(item.getTitle())
                                 .thumbnail(item.getThumbnail())
-                                .shippingOptions("shipping options")
-                                .build());
+                                .build())
+                .flatMap(itemDto -> paymentOptionsFluxService.get(itemDto.getId())
+                        .map(paymentOptions -> {
+                            itemDto.setPaymentName(paymentOptions.getPaymentMethods().get(0).getId());
+
+                            return itemDto;
+                        }));
     }
 }
